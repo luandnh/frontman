@@ -12,6 +12,7 @@ import (
 	"github.com/Frontman-Labs/frontman/plugins"
 	"github.com/Frontman-Labs/frontman/service"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 type FPlugin struct{}
@@ -74,18 +75,20 @@ func (p *FPlugin) PreRequest(req *http.Request, sr service.ServiceRegistry, cfg 
 	}
 	response, err := GRPC_CLI.Client.VerifyToken(req.Context(), &pb.TokenRequest{Token: getToken(req.Header.Get("Authorization"))})
 	if err != nil {
-		if InArray(err.Error(), []string{ERR_TOKEN_IS_EMPTY, ERR_TOKEN_IS_INVALID, ERR_TOKEN_IS_EXPIRED}) {
-			code := "ERR_TOKEN_IS_INVALID"
-			if err.Error() == ERR_TOKEN_IS_EXPIRED {
-				code = "ERR_TOKEN_IS_EXPIRED"
-			}
-			return &FErr{
-				Err:  "unauthorize",
-				Code: http.StatusUnauthorized,
-				JSON: map[string]any{
-					"message": "unauthorize",
-					"code":    code,
-				},
+		if e, ok := status.FromError(err); ok {
+			if InArray(e.Message(), []string{ERR_TOKEN_IS_EMPTY, ERR_TOKEN_IS_INVALID, ERR_TOKEN_IS_EXPIRED}) {
+				code := "ERR_TOKEN_IS_INVALID"
+				if err.Error() == ERR_TOKEN_IS_EXPIRED {
+					code = "ERR_TOKEN_IS_EXPIRED"
+				}
+				return &FErr{
+					Err:  "unauthorize",
+					Code: http.StatusUnauthorized,
+					JSON: map[string]any{
+						"message": "unauthorize",
+						"code":    code,
+					},
+				}
 			}
 		}
 		return &FErr{
