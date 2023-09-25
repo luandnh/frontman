@@ -14,6 +14,7 @@ import (
 type PluginError interface {
 	StatusCode() int
 	Error() string
+	Response() any
 }
 
 // FrontmanPlugin is an interface for creating plugins for Frontman.

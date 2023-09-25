@@ -46,6 +46,7 @@ var GRPC_CLI *GRPCClient
 type FErr struct {
 	Err  string
 	Code int
+	JSON any
 }
 
 func (p *FErr) StatusCode() int {
@@ -56,6 +57,14 @@ func (p *FErr) Error() string {
 	return p.Err
 }
 
+func (p *FErr) Response() any {
+	return p.JSON
+}
+
+const ERR_TOKEN_IS_EMPTY = "token is empty"
+const ERR_TOKEN_IS_INVALID = "token is invalid"
+const ERR_TOKEN_IS_EXPIRED = "token is expired"
+
 func (p *FPlugin) PreRequest(req *http.Request, sr service.ServiceRegistry, cfg *config.Config) plugins.PluginError {
 	if InArray(req.URL.Path, SkipRoutes) {
 		return nil
@@ -65,9 +74,27 @@ func (p *FPlugin) PreRequest(req *http.Request, sr service.ServiceRegistry, cfg 
 	}
 	response, err := GRPC_CLI.Client.VerifyToken(req.Context(), &pb.TokenRequest{Token: getToken(req.Header.Get("Authorization"))})
 	if err != nil {
+		if InArray(err.Error(), []string{ERR_TOKEN_IS_EMPTY, ERR_TOKEN_IS_INVALID, ERR_TOKEN_IS_EXPIRED}) {
+			code := "ERR_TOKEN_IS_INVALID"
+			if err.Error() == ERR_TOKEN_IS_EXPIRED {
+				code = "ERR_TOKEN_IS_EXPIRED"
+			}
+			return &FErr{
+				Err:  "unauthorize",
+				Code: http.StatusUnauthorized,
+				JSON: map[string]any{
+					"message": "unauthorize",
+					"code":    code,
+				},
+			}
+		}
 		return &FErr{
 			Err:  err.Error(),
-			Code: 500,
+			Code: http.StatusInternalServerError,
+			JSON: map[string]any{
+				"message": "unauthorize",
+				"code":    "AAA_INTERNAL_SERVER_ERROR",
+			},
 		}
 	}
 	data := response.GetData()

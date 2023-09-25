@@ -2,14 +2,15 @@ package gateway
 
 import (
 	"encoding/json"
-	"github.com/Frontman-Labs/frontman/config"
-	"github.com/Frontman-Labs/frontman/log"
-	"github.com/Frontman-Labs/frontman/plugins"
-	"github.com/Frontman-Labs/frontman/service"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/Frontman-Labs/frontman/config"
+	"github.com/Frontman-Labs/frontman/log"
+	"github.com/Frontman-Labs/frontman/plugins"
+	"github.com/Frontman-Labs/frontman/service"
 )
 
 type APIGateway struct {
@@ -32,7 +33,10 @@ func (g *APIGateway) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	for _, plugin := range g.plugs {
 		if err := plugin.PreRequest(req, g.reg, g.conf); err != nil {
 			g.log.Errorf("Plugin error: %v", err)
-			http.Error(w, err.Error(), err.StatusCode())
+			// http.Error(w, err.Error(), err.StatusCode())
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(err.StatusCode())
+			json.NewEncoder(w).Encode(err.Response())
 			return
 		}
 	}
