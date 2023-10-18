@@ -122,7 +122,7 @@ func (p *FPlugin) Close() plugins.PluginError {
 }
 
 func newGRPCClient() {
-	conn, err := grpc.Dial("aaa-service:8001", grpc.WithInsecure())
+	conn, err := grpc.Dial("aaa-service:8000", grpc.WithInsecure())
 	if err != nil {
 		log.Error(err.Error())
 	}
