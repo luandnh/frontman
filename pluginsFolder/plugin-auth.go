@@ -39,7 +39,7 @@ var FinSHeaders = []string{
 }
 
 type GRPCClient struct {
-	Client pb.AuthServiceClient
+	Client pb.TokenServiceClient
 }
 
 var GRPC_CLI *GRPCClient
@@ -73,7 +73,7 @@ func (p *FPlugin) PreRequest(req *http.Request, sr service.ServiceRegistry, cfg 
 	if GRPC_CLI == nil {
 		newGRPCClient()
 	}
-	response, err := GRPC_CLI.Client.VerifyToken(req.Context(), &pb.TokenRequest{Token: getToken(req.Header.Get("Authorization"))})
+	response, err := GRPC_CLI.Client.VerifyToken(req.Context(), &pb.VerifyTokenRequest{Token: getToken(req.Header.Get("Authorization"))})
 	if err != nil {
 		if e, ok := status.FromError(err); ok {
 			if InArray(e.Message(), []string{ERR_TOKEN_IS_EMPTY, ERR_TOKEN_IS_INVALID, ERR_TOKEN_IS_EXPIRED}) {
@@ -127,7 +127,7 @@ func newGRPCClient() {
 		log.Error(err.Error())
 	}
 	GRPC_CLI = &GRPCClient{
-		Client: pb.NewAuthServiceClient(conn),
+		Client: pb.NewTokenServiceClient(conn),
 	}
 }
 
