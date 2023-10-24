@@ -30,6 +30,7 @@ func NewAPIGateway(bs service.ServiceRegistry, plugs []plugins.FrontmanPlugin, c
 }
 
 func (g *APIGateway) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	enableCors(&w)
 	for _, plugin := range g.plugs {
 		if err := plugin.PreRequest(req, g.reg, g.conf); err != nil {
 			g.log.Errorf("Plugin error: %v", err)
@@ -153,4 +154,12 @@ func copyHeaders(dst, src http.Header) {
 	for k, v := range src {
 		dst[k] = v
 	}
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	(*w).Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, PATCH, DELETE, OPTIONS")
 }
