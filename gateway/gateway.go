@@ -31,6 +31,7 @@ func NewAPIGateway(bs service.ServiceRegistry, plugs []plugins.FrontmanPlugin, c
 
 func (g *APIGateway) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	enableCors(&w)
+	allowOptionsMethod(w, req)
 	for _, plugin := range g.plugs {
 		if err := plugin.PreRequest(req, g.reg, g.conf); err != nil {
 			g.log.Errorf("Plugin error: %v", err)
@@ -162,4 +163,15 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 	(*w).Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, PATCH, DELETE, OPTIONS")
+}
+
+func allowOptionsMethod(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "OPTIONS" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]any{
+			"message": "ok",
+		})
+		return
+	}
 }
