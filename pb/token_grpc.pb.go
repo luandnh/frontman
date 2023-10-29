@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	TokenService_VerifyToken_FullMethodName = "/proto.token.TokenService/VerifyToken"
+	TokenService_VerifyToken_FullMethodName = "/proto.aaa.TokenService/VerifyToken"
 )
 
 // TokenServiceClient is the client API for TokenService service.
@@ -96,7 +96,7 @@ func _TokenService_VerifyToken_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var TokenService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.token.TokenService",
+	ServiceName: "proto.aaa.TokenService",
 	HandlerType: (*TokenServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

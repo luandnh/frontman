@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package proto.token;
+package proto.aaa;
 
 option go_package = "github.com/tel4vn/fins-microservices/gen/proto/pb;pb";
 
@@ -26,5 +26,5 @@ message VerifyTokenResponse {
 message VerifyTokenRequest { string token = 1; }
 
 service TokenService {
-  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse);
+  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse) {};
 }
