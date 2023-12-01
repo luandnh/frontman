@@ -9,12 +9,13 @@ message AuthUser {
   string business_unit_id = 2;
   string user_id = 3;
   string username = 4;
-  string database_host = 5;
-  uint32 database_port = 6;
-  string database_name = 7;
-  string database_user = 8;
-  string database_password = 9;
-  repeated string services = 10;
+  string group_id = 5;
+  string database_host = 6;
+  uint32 database_port = 7;
+  string database_name = 8;
+  string database_user = 9;
+  string database_password = 10;
+  repeated string services = 11;
 }
 
 message VerifyTokenResponse {

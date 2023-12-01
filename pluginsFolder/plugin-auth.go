@@ -36,6 +36,12 @@ var FinSHeaders = []string{
 	"X-Database-Host",
 	"X-Database-Port",
 	"X-Database-Name",
+	"X-User-Id",
+	"X-Username",
+	"X-Tenant-Id",
+	"X-Business-Unit-Id",
+	"X-Group-Id",
+	"X-Token",
 }
 
 type GRPCClient struct {
@@ -73,7 +79,8 @@ func (p *FPlugin) PreRequest(req *http.Request, sr service.ServiceRegistry, cfg 
 	if GRPC_CLI == nil {
 		newGRPCClient()
 	}
-	response, err := GRPC_CLI.Client.VerifyToken(req.Context(), &pb.VerifyTokenRequest{Token: getToken(req.Header.Get("Authorization"))})
+	token := getToken(req.Header.Get("Authorization"))
+	response, err := GRPC_CLI.Client.VerifyToken(req.Context(), &pb.VerifyTokenRequest{Token: token})
 	if err != nil {
 		if e, ok := status.FromError(err); ok {
 			if InArray(e.Message(), []string{ERR_TOKEN_IS_EMPTY, ERR_TOKEN_IS_INVALID, ERR_TOKEN_IS_EXPIRED}) {
@@ -101,11 +108,17 @@ func (p *FPlugin) PreRequest(req *http.Request, sr service.ServiceRegistry, cfg 
 		}
 	}
 	data := response.GetData()
-	req.Header.Set("X-Database-User", data.DatabaseUser)
-	req.Header.Set("X-Database-Password", data.DatabasePassword)
-	req.Header.Set("X-Database-Host", data.DatabaseHost)
-	req.Header.Set("X-Database-Port", fmt.Sprintf("%d", data.DatabasePort))
-	req.Header.Set("X-Database-Name", data.DatabaseName)
+	req.Header.Set("X-Database-User", data.GetDatabaseUser())
+	req.Header.Set("X-Database-Password", data.GetDatabasePassword())
+	req.Header.Set("X-Database-Host", data.GetDatabaseHost())
+	req.Header.Set("X-Database-Port", fmt.Sprintf("%d", data.GetDatabasePort()))
+	req.Header.Set("X-Database-Name", data.GetDatabaseName())
+	req.Header.Set("X-User-Id", data.GetUserId())
+	req.Header.Set("X-Username", data.GetUsername())
+	req.Header.Set("X-Business-Unit-Id", data.GetBusinessUnitId())
+	req.Header.Set("X-Tenant-Id", data.GetTenantId())
+	req.Header.Set("X-Group-Id", data.GetGroupId())
+	req.Header.Set("X-Token", token)
 	return nil
 }
 
