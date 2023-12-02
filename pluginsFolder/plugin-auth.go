@@ -28,6 +28,7 @@ var SkipRoutes = []string{
 	"/aaa/v1/login",
 	"/aaa/v1/token/refresh",
 	"/aaa/v1/ui-config",
+	"/aaa/v1/password/forgot",
 }
 
 var FinSHeaders = []string{
