@@ -29,6 +29,7 @@ var SkipRoutes = []string{
 	"/aaa/v1/token/refresh",
 	"/aaa/v1/ui-config",
 	"/aaa/v1/password/forgot",
+	"/bss/v1/webhook",
 }
 
 var FinSHeaders = []string{
@@ -74,7 +75,7 @@ const ERR_TOKEN_IS_INVALID = "token is invalid"
 const ERR_TOKEN_IS_EXPIRED = "token is expired"
 
 func (p *FPlugin) PreRequest(req *http.Request, sr service.ServiceRegistry, cfg *config.Config) plugins.PluginError {
-	if InArray(req.URL.Path, SkipRoutes) {
+	if InArrayContains(req.URL.Path, SkipRoutes) {
 		return nil
 	}
 	if GRPC_CLI == nil {
@@ -156,6 +157,15 @@ func InArray(item any, array any) bool {
 	}
 	for i := 0; i < arr.Len(); i++ {
 		if arr.Index(i).Interface() == item {
+			return true
+		}
+	}
+	return false
+}
+
+func InArrayContains(item string, array []string) bool {
+	for _, v := range array {
+		if strings.Contains(item, v) {
 			return true
 		}
 	}
