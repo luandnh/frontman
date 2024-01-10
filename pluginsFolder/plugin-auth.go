@@ -120,6 +120,7 @@ func (p *FPlugin) PreRequest(req *http.Request, sr service.ServiceRegistry, cfg 
 	req.Header.Set("X-Business-Unit-Id", data.GetBusinessUnitId())
 	req.Header.Set("X-Tenant-Id", data.GetTenantId())
 	req.Header.Set("X-Group-Id", data.GetGroupId())
+	req.Header.Set("X-Level", data.GetLevel())
 	req.Header.Set("X-Token", token)
 	return nil
 }

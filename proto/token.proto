@@ -15,7 +15,8 @@ message AuthUser {
   string database_user = 8;
   string database_password = 9;
   repeated string services = 10;
-  string group_id = 11;
+  string level = 11;
+  string group_id = 12;
 }
 
 message VerifyTokenResponse {
