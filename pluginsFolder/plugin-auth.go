@@ -30,6 +30,7 @@ var SkipRoutes = []string{
 	"/aaa/v1/ui-config",
 	"/aaa/v1/password/forgot",
 	"/bss/v1/webhook",
+	"/bss-message/v1/wss",
 }
 
 var FinSHeaders = []string{
